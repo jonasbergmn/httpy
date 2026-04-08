@@ -1,11 +1,11 @@
 import logging
 
 from httpy.models import (
-    HttpyEnvironment,
-    HttpyProject,
-    HttpyRequest,
-    HttpyRequestTemplate,
-    HttpyResponse,
+    Environment,
+    Project,
+    Request,
+    RequestTemplate,
+    Response,
 )
 
 logging.basicConfig(
@@ -14,9 +14,9 @@ logging.basicConfig(
 )
 
 __all__ = [
-    "HttpyEnvironment",
-    "HttpyProject",
-    "HttpyRequest",
-    "HttpyRequestTemplate",
-    "HttpyResponse",
+    "Environment",
+    "Project",
+    "Request",
+    "RequestTemplate",
+    "Response",
 ]

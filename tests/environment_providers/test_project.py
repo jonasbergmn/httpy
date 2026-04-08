@@ -2,7 +2,7 @@ from httpy.models import (
     save_project,
     set_basepath,
     load_project,
-    HttpyProject,
+    Project,
     make_project_path,
 )
 import pytest
@@ -15,21 +15,21 @@ def set_basepath_for_tests(tmp_path: Path):
 
 
 @pytest.fixture
-def default_project() -> HttpyProject:
-    return HttpyProject(
+def default_project() -> Project:
+    return Project(
         "Test Project",
         "A test project",
     )
 
 
 @pytest.fixture
-def saved_project_name(tmp_path: Path, default_project: HttpyProject) -> str:
+def saved_project_name(tmp_path: Path, default_project: Project) -> str:
     save_project(default_project)
     return default_project.name
 
 
 def test_create_project():
-    project = HttpyProject(
+    project = Project(
         "Test Project",
         "A test project",
     )
@@ -40,7 +40,7 @@ def test_create_project():
 
 def test_save_project(
     tmp_path: Path,
-    default_project: HttpyProject,
+    default_project: Project,
 ):
     save_project(default_project)
 

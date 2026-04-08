@@ -1,14 +1,14 @@
 from httpy.models import (
-    HttpyProject,
-    HttpyEnvironment,
-    HttpyRequestTemplate,
+    Project,
+    Environment,
+    RequestTemplate,
     save_project,
     load_project,
 )
 
 
 if __name__ == "__main__":
-    default_environment = HttpyEnvironment(
+    default_environment = Environment(
         name="Default",
         configs={
             "API_KEY": "1234567890abcdef",
@@ -17,7 +17,7 @@ if __name__ == "__main__":
         },
     )
 
-    template_one = HttpyRequestTemplate(
+    template_one = RequestTemplate(
         name="Get User Info",
         method="GET",
         url="{{BASE_URL}}/users/{{user_id}}",
@@ -26,7 +26,7 @@ if __name__ == "__main__":
         body="",
     )
 
-    template_two = HttpyRequestTemplate(
+    template_two = RequestTemplate(
         name="Get User Info Details",
         method="GET",
         url="{{BASE_URL}}/users/{{user_id}}/details",
@@ -35,7 +35,7 @@ if __name__ == "__main__":
         body="",
     )
 
-    project = HttpyProject(
+    project = Project(
         name="My API Project",
         description="A project for testing HTTP requests",
         environments=[default_environment],

@@ -1,5 +1,5 @@
 from httpy.models import (
-    HttpyRequestTemplate,
+    RequestTemplate,
     make_template_path,
     load_template,
     load_templates,
@@ -16,8 +16,8 @@ def set_basepath_for_tests(tmp_path: Path):
 
 
 @pytest.fixture
-def default_template() -> HttpyRequestTemplate:
-    return HttpyRequestTemplate(
+def default_template() -> RequestTemplate:
+    return RequestTemplate(
         name="Test Template",
         method="GET",
         url="https://example.com/api",
@@ -28,9 +28,9 @@ def default_template() -> HttpyRequestTemplate:
 
 
 @pytest.fixture
-def default_templates() -> list[HttpyRequestTemplate]:
+def default_templates() -> list[RequestTemplate]:
     return [
-        HttpyRequestTemplate(
+        RequestTemplate(
             name="Test Template",
             method="GET",
             url="https://example.com/api",
@@ -38,7 +38,7 @@ def default_templates() -> list[HttpyRequestTemplate]:
             parameters={"query": "test"},
             body="",
         ),
-        HttpyRequestTemplate(
+        RequestTemplate(
             name="Test Template 2",
             method="GET",
             url="https://example.com/api",
@@ -50,7 +50,7 @@ def default_templates() -> list[HttpyRequestTemplate]:
 
 
 @pytest.fixture
-def saved_template_path(default_template: HttpyRequestTemplate) -> Path:
+def saved_template_path(default_template: RequestTemplate) -> Path:
     project_name = "Test Project"
     template_path = make_template_path(project_name, default_template.name)
     save_template(project_name, default_template)
@@ -58,7 +58,7 @@ def saved_template_path(default_template: HttpyRequestTemplate) -> Path:
 
 
 @pytest.fixture
-def saved_templates_project_name(default_templates: list[HttpyRequestTemplate]) -> str:
+def saved_templates_project_name(default_templates: list[RequestTemplate]) -> str:
     project_name = "Test Project"
     for template in default_templates:
         save_template(project_name, template)
@@ -66,7 +66,7 @@ def saved_templates_project_name(default_templates: list[HttpyRequestTemplate]) 
     return project_name
 
 
-def test_create_template(default_template: HttpyRequestTemplate):
+def test_create_template(default_template: RequestTemplate):
     assert default_template.name == "Test Template"
     assert default_template.method == "GET"
     assert default_template.url == "https://example.com/api"
@@ -75,7 +75,7 @@ def test_create_template(default_template: HttpyRequestTemplate):
     assert default_template.body == ""
 
 
-def test_save_template(default_template: HttpyRequestTemplate):
+def test_save_template(default_template: RequestTemplate):
     project_name = "Test Project"
 
     template_path = make_template_path(project_name, default_template.name)
