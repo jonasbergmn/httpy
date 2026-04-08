@@ -1,0 +1,63 @@
+from httpy.models import (
+    create_project,
+    save_project,
+    set_basepath,
+    load_project,
+    HttpyProject,
+    make_project_path,
+)
+import pytest
+from pathlib import Path
+
+
+@pytest.fixture(autouse=True, scope="function")
+def set_basepath_for_tests(tmp_path: Path):
+    set_basepath(tmp_path)
+
+
+@pytest.fixture
+def default_project() -> HttpyProject:
+    return create_project(
+        "Test Project",
+        "A test project",
+    )
+
+
+@pytest.fixture
+def saved_project_name(tmp_path: Path, default_project: HttpyProject) -> str:
+    save_project(default_project)
+    return default_project.name
+
+
+def test_create_project():
+    project = create_project(
+        "Test Project",
+        "A test project",
+    )
+
+    assert project.name == "Test Project"
+    assert project.description == "A test project"
+    assert len(project.environments) == 1
+    assert project.environments[0].name == "Default"
+
+
+def test_save_project(
+    tmp_path: Path,
+    default_project: HttpyProject,
+):
+    save_project(default_project)
+
+    project_file = make_project_path(default_project.name)
+    assert project_file.exists()
+
+
+def test_load_project(
+    saved_project_name: str,
+):
+    assert make_project_path(saved_project_name).exists()
+
+    loaded_project = load_project(saved_project_name)
+
+    assert loaded_project.name == loaded_project.name
+    assert loaded_project.description == loaded_project.description
+    assert len(loaded_project.environments) == len(loaded_project.environments)
