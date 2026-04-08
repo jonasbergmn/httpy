@@ -97,14 +97,6 @@ class HttpyProject:
         )
 
 
-def create_project(name: str, description: str) -> HttpyProject:
-    environment = HttpyEnvironment(name="Default", configs={})
-    project = HttpyProject(
-        name=name, description=description, environments=[environment]
-    )
-    return project
-
-
 def clean_name(name: str) -> str:
     return name.lower().replace(" ", "_")
 
@@ -112,37 +104,6 @@ def clean_name(name: str) -> str:
 def make_project_path(project_name: str) -> Path:
     os.makedirs(_basepath / clean_name(project_name), exist_ok=True)
     return _basepath / clean_name(project_name) / "project.json"
-
-
-def save_project(project: HttpyProject) -> Path:
-    project_path = make_project_path(project.name)
-    project_json = {
-        "name": project.name,
-        "description": project.description,
-        "environments": [
-            {"name": env.name, "configs": env.configs} for env in project.environments
-        ],
-    }
-    with open(project_path, "w") as f:
-        json.dump(project_json, f, indent=4)
-
-    return project_path
-
-
-def load_project(project_name: str) -> HttpyProject:
-    project_json = make_project_path(project_name)
-    with open(project_json, "r") as f:
-        data = json.load(f)
-    environments = [
-        HttpyEnvironment(name=env["name"], configs=env["configs"])
-        for env in data.get("environments", [])
-    ]
-
-    return HttpyProject(
-        name=data["name"],
-        description=data["description"],
-        environments=environments,
-    )
 
 
 def make_template_path(project_name: str, template_name: str) -> Path:
@@ -153,6 +114,11 @@ def make_template_path(project_name: str, template_name: str) -> Path:
         / "templates"
         / f"{clean_name(template_name)}.json"
     )
+
+
+def make_templates_path(project_name: str) -> Path:
+    os.makedirs(_basepath / clean_name(project_name) / "templates", exist_ok=True)
+    return _basepath / clean_name(project_name) / "templates"
 
 
 def save_template(project_name: str, template: HttpyRequestTemplate) -> Path:
@@ -186,4 +152,60 @@ def load_template(project_name: str, template_name: str) -> HttpyRequestTemplate
         headers=data["headers"],
         parameters=data["parameters"],
         body=data["body"],
+    )
+
+
+def load_templates(project_name: str) -> list[HttpyRequestTemplate]:
+    templates_dir = make_templates_path(project_name)
+
+    templates: list[HttpyRequestTemplate] = []
+    for template_file in templates_dir.glob("*.json"):
+        template = load_template(project_name, template_file.stem)
+        templates.append(template)
+
+    return templates
+
+
+def save_project(project: HttpyProject, include_templates: bool = False) -> Path:
+    project_path = make_project_path(project.name)
+    project_json = {
+        "name": project.name,
+        "description": project.description,
+        "environments": [
+            {"name": env.name, "configs": env.configs} for env in project.environments
+        ],
+    }
+    with open(project_path, "w") as f:
+        json.dump(project_json, f, indent=4)
+
+    if include_templates:
+        for template in project.templates:
+            save_template(project.name, template)
+
+    return project_path
+
+
+def load_project(project_name: str, include_templates: bool = False) -> HttpyProject:
+    project_json = make_project_path(project_name)
+    with open(project_json, "r") as f:
+        data = json.load(f)
+    environments = [
+        HttpyEnvironment(name=env["name"], configs=env["configs"])
+        for env in data.get("environments", [])
+    ]
+
+    if include_templates:
+        templates = load_templates(project_name)
+
+        return HttpyProject(
+            name=data["name"],
+            description=data["description"],
+            environments=environments,
+            templates=templates,
+        )
+
+    return HttpyProject(
+        name=data["name"],
+        description=data["description"],
+        environments=environments,
     )

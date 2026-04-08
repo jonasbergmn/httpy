@@ -1,0 +1,14 @@
+{
+    "name": "My API Project",
+    "description": "A project for testing HTTP requests",
+    "environments": [
+        {
+            "name": "Default",
+            "configs": {
+                "API_KEY": "1234567890abcdef",
+                "BASE_URL": "https://api.example.com",
+                "user_id": "42"
+            }
+        }
+    ]
+}

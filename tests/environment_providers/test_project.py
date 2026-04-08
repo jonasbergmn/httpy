@@ -1,5 +1,4 @@
 from httpy.models import (
-    create_project,
     save_project,
     set_basepath,
     load_project,
@@ -17,7 +16,7 @@ def set_basepath_for_tests(tmp_path: Path):
 
 @pytest.fixture
 def default_project() -> HttpyProject:
-    return create_project(
+    return HttpyProject(
         "Test Project",
         "A test project",
     )
@@ -30,15 +29,13 @@ def saved_project_name(tmp_path: Path, default_project: HttpyProject) -> str:
 
 
 def test_create_project():
-    project = create_project(
+    project = HttpyProject(
         "Test Project",
         "A test project",
     )
 
     assert project.name == "Test Project"
     assert project.description == "A test project"
-    assert len(project.environments) == 1
-    assert project.environments[0].name == "Default"
 
 
 def test_save_project(

@@ -2,6 +2,7 @@ from httpy.models import (
     HttpyRequestTemplate,
     make_template_path,
     load_template,
+    load_templates,
     save_template,
     set_basepath,
 )
@@ -27,11 +28,42 @@ def default_template() -> HttpyRequestTemplate:
 
 
 @pytest.fixture
+def default_templates() -> list[HttpyRequestTemplate]:
+    return [
+        HttpyRequestTemplate(
+            name="Test Template",
+            method="GET",
+            url="https://example.com/api",
+            headers={"Authorization": "Bearer token"},
+            parameters={"query": "test"},
+            body="",
+        ),
+        HttpyRequestTemplate(
+            name="Test Template 2",
+            method="GET",
+            url="https://example.com/api",
+            headers={"Authorization": "Bearer token"},
+            parameters={"query": "test"},
+            body="",
+        ),
+    ]
+
+
+@pytest.fixture
 def saved_template_path(default_template: HttpyRequestTemplate) -> Path:
     project_name = "Test Project"
     template_path = make_template_path(project_name, default_template.name)
     save_template(project_name, default_template)
     return template_path
+
+
+@pytest.fixture
+def saved_templates_project_name(default_templates: list[HttpyRequestTemplate]) -> str:
+    project_name = "Test Project"
+    for template in default_templates:
+        save_template(project_name, template)
+
+    return project_name
 
 
 def test_create_template(default_template: HttpyRequestTemplate):
@@ -65,3 +97,9 @@ def test_load_template(saved_template_path: Path):
     assert loaded_template.headers == {"Authorization": "Bearer token"}
     assert loaded_template.parameters == {"query": "test"}
     assert loaded_template.body == ""
+
+
+def test_load_templates(saved_templates_project_name: str):
+    templates = load_templates(saved_templates_project_name)
+
+    assert len(templates) == 2

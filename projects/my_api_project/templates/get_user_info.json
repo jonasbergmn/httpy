@@ -1,0 +1,10 @@
+{
+    "name": "Get User Info",
+    "method": "GET",
+    "url": "{{BASE_URL}}/users/{{user_id}}",
+    "headers": {
+        "Authorization": "Bearer {{API_KEY}}"
+    },
+    "parameters": {},
+    "body": ""
+}
