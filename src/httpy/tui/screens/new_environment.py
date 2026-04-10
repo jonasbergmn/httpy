@@ -35,16 +35,10 @@ class NewEnvironmentScreen(ModalScreen[HttpyEnvironment | None]):
             yield Input(placeholder="Environment name", id="new-env-name")
             yield Static("Configuration Variables", classes="section-title")
             yield Vertical(id="new-env-config-rows")
-            yield Button(
-                "+ Add Variable", variant="default", id="btn-add-env-config"
-            )
+            yield Button("+ Add Variable", variant="default", id="btn-add-env-config")
             with Horizontal(classes="button-row"):
-                yield Button(
-                    "Create", variant="primary", id="btn-create-env"
-                )
-                yield Button(
-                    "Cancel", variant="default", id="btn-cancel-env"
-                )
+                yield Button("Create", variant="primary", id="btn-create-env")
+                yield Button("Cancel", variant="default", id="btn-cancel-env")
 
     def on_mount(self) -> None:
         container = self.query_one("#new-env-config-rows", Vertical)

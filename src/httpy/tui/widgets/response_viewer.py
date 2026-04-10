@@ -40,10 +40,12 @@ class ResponseViewer(Widget):
         headers_log = self.query_one("#response-headers", RichLog)
         headers_log.clear()
         for key, value in response.headers.items():
-            headers_log.write(Text.assemble(
-                (f"{key}: ", "bold cyan"),
-                (value, ""),
-            ))
+            headers_log.write(
+                Text.assemble(
+                    (f"{key}: ", "bold cyan"),
+                    (value, ""),
+                )
+            )
 
         body_log = self.query_one("#response-body", RichLog)
         body_log.clear()

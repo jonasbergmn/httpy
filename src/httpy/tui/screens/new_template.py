@@ -57,12 +57,8 @@ class NewTemplateScreen(ModalScreen[HttpyRequestTemplate | None]):
             yield Label("Body")
             yield TextArea(id="new-tmpl-body")
             with Horizontal(classes="button-row"):
-                yield Button(
-                    "Create", variant="primary", id="btn-create-template"
-                )
-                yield Button(
-                    "Cancel", variant="default", id="btn-cancel-template"
-                )
+                yield Button("Create", variant="primary", id="btn-create-template")
+                yield Button("Cancel", variant="default", id="btn-cancel-template")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "btn-create-template":
