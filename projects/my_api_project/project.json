@@ -6,8 +6,7 @@
             "name": "Default",
             "configs": {
                 "API_KEY": "1234567890abcdef",
-                "BASE_URL": "https://api.example.com",
-                "user_id": "42"
+                "BASE_URL": "https://jsonplaceholder.typicode.com"
             }
         }
     ]

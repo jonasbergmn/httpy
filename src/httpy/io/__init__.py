@@ -1,100 +1,14 @@
-from dataclasses import dataclass
 import json
 from pathlib import Path
 import os
 
-
-_basepath = Path("projects")
-
-
-def set_basepath(path: str | Path) -> None:
-    global _basepath
-    match path:
-        case str():
-            _basepath = Path(path)
-        case Path():
-            _basepath = path
-
-
-@dataclass
-class HttpyEnvironment:
-    name: str
-    configs: dict[str, str]
-
-
-@dataclass
-class HttpyResponse:
-    status_code: int
-    headers: dict[str, str]
-    body: str
-
-
-@dataclass
-class HttpyRequest:
-    method: str
-    url: str
-    headers: dict[str, str]
-    parameters: dict[str, str]
-    body: str
-
-
-@dataclass
-class HttpyRequestTemplate:
-    name: str
-    method: str
-    url: str
-    headers: dict[str, str]
-    parameters: dict[str, str]
-    body: str
-
-
-class HttpyProject:
-    name: str
-    description: str
-    environments: list[HttpyEnvironment]
-    templates: list[HttpyRequestTemplate]
-
-    def __init__(
-        self,
-        name: str,
-        description: str,
-        environments: list[HttpyEnvironment] | None = None,
-        templates: list[HttpyRequestTemplate] | None = None,
-    ) -> None:
-        self.name = name
-        self.description = description
-        self.templates = templates if templates else []
-        self.environments = environments if environments else []
-
-    def make_request(
-        self,
-        template: HttpyRequestTemplate,
-        environment: HttpyEnvironment,
-    ) -> HttpyRequest:
-        url = template.url
-        headers = {k: v for k, v in template.headers.items()}
-        body = template.body
-
-        for key, value in environment.configs.items():
-            placeholder = f"{{{{{key}}}}}"
-            url = url.replace(placeholder, value)
-            headers = {k: v.replace(placeholder, value) for k, v in headers.items()}
-            body = body.replace(placeholder, value)
-
-        return HttpyRequest(
-            method=template.method,
-            url=url,
-            headers=headers,
-            parameters=template.parameters,
-            body=body,
-        )
-
-    def execute_request(self, request: HttpyRequest) -> HttpyResponse:
-        return HttpyResponse(
-            status_code=200,
-            headers={"Content-Type": "application/json"},
-            body='{"message": "This is a mock response"}',
-        )
+from httpy.core import (
+    get_basepath,
+)
+from httpy.core.template import HttpyRequestTemplate
+from httpy.core.environment import HttpyEnvironment
+from httpy.core.project import HttpyProject
+from httpy.core.request_handler import HttpRequestHandlerProtocol, HttpyRequestHandler
 
 
 def clean_name(name: str) -> str:
@@ -102,14 +16,14 @@ def clean_name(name: str) -> str:
 
 
 def make_project_path(project_name: str) -> Path:
-    os.makedirs(_basepath / clean_name(project_name), exist_ok=True)
-    return _basepath / clean_name(project_name) / "project.json"
+    os.makedirs(get_basepath() / clean_name(project_name), exist_ok=True)
+    return get_basepath() / clean_name(project_name) / "project.json"
 
 
 def make_template_path(project_name: str, template_name: str) -> Path:
-    os.makedirs(_basepath / clean_name(project_name) / "templates", exist_ok=True)
+    os.makedirs(get_basepath() / clean_name(project_name) / "templates", exist_ok=True)
     return (
-        _basepath
+        get_basepath()
         / clean_name(project_name)
         / "templates"
         / f"{clean_name(template_name)}.json"
@@ -117,8 +31,8 @@ def make_template_path(project_name: str, template_name: str) -> Path:
 
 
 def make_templates_path(project_name: str) -> Path:
-    os.makedirs(_basepath / clean_name(project_name) / "templates", exist_ok=True)
-    return _basepath / clean_name(project_name) / "templates"
+    os.makedirs(get_basepath() / clean_name(project_name) / "templates", exist_ok=True)
+    return get_basepath() / clean_name(project_name) / "templates"
 
 
 def save_template(project_name: str, template: HttpyRequestTemplate) -> Path:
@@ -185,7 +99,11 @@ def save_project(project: HttpyProject, include_templates: bool = False) -> Path
     return project_path
 
 
-def load_project(project_name: str, include_templates: bool = False) -> HttpyProject:
+def load_project(
+    project_name: str,
+    include_templates: bool = False,
+    request_handler: HttpRequestHandlerProtocol | None = None,
+) -> HttpyProject:
     project_json = make_project_path(project_name)
     with open(project_json, "r") as f:
         data = json.load(f)
@@ -200,6 +118,7 @@ def load_project(project_name: str, include_templates: bool = False) -> HttpyPro
         return HttpyProject(
             name=data["name"],
             description=data["description"],
+            request_handler=request_handler or HttpyRequestHandler(),
             environments=environments,
             templates=templates,
         )
@@ -207,5 +126,6 @@ def load_project(project_name: str, include_templates: bool = False) -> HttpyPro
     return HttpyProject(
         name=data["name"],
         description=data["description"],
+        request_handler=request_handler or HttpyRequestHandler(),
         environments=environments,
     )

@@ -1,12 +1,15 @@
-from httpy.models import (
+from httpy.io import (
     save_project,
-    set_basepath,
     load_project,
-    HttpyProject,
     make_project_path,
 )
+from httpy.core import set_basepath
+from httpy.core.request_handler import HttpyRequestHandler
+
 import pytest
 from pathlib import Path
+
+from httpy.core.project import HttpyProject
 
 
 @pytest.fixture(autouse=True, scope="function")
@@ -19,6 +22,7 @@ def default_project() -> HttpyProject:
     return HttpyProject(
         "Test Project",
         "A test project",
+        HttpyRequestHandler(),
     )
 
 
@@ -29,10 +33,7 @@ def saved_project_name(tmp_path: Path, default_project: HttpyProject) -> str:
 
 
 def test_create_project():
-    project = HttpyProject(
-        "Test Project",
-        "A test project",
-    )
+    project = HttpyProject("Test Project", "A test project", HttpyRequestHandler())
 
     assert project.name == "Test Project"
     assert project.description == "A test project"

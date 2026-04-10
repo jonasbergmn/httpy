@@ -1,11 +1,7 @@
-from httpy.models import (
-    HttpyRequestTemplate,
-    make_template_path,
-    load_template,
-    load_templates,
-    save_template,
-    set_basepath,
-)
+from httpy.core import set_basepath
+from httpy.core.template import HttpyRequestTemplate
+from httpy.io import make_template_path, load_template, load_templates, save_template
+
 import pytest
 from pathlib import Path
 
