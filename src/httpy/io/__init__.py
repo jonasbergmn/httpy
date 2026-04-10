@@ -130,3 +130,14 @@ def load_project(
         request_handler=request_handler or HttpyRequestHandler(),
         environments=environments,
     )
+
+
+def list_projects() -> list[str]:
+    basepath = get_basepath()
+    if not basepath.exists():
+        return []
+    return [
+        d.name
+        for d in sorted(basepath.iterdir())
+        if d.is_dir() and (d / "project.json").exists()
+    ]

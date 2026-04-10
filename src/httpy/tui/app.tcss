@@ -1,0 +1,164 @@
+/* Main layout */
+#main-container {
+    height: 1fr;
+}
+
+/* Sidebar */
+#sidebar {
+    width: 1fr;
+    max-width: 40;
+    min-width: 25;
+    border-right: thick $accent;
+    background: $surface;
+    padding: 0 1;
+}
+
+.sidebar-title {
+    text-style: bold;
+    color: $text;
+    padding: 1 0;
+    text-align: center;
+    background: $accent;
+}
+
+#project-tree {
+    height: 1fr;
+}
+
+/* Main panel */
+#main-panel {
+    width: 3fr;
+    height: 1fr;
+    padding: 0 1;
+}
+
+/* Panel and section titles */
+.panel-title {
+    text-style: bold;
+    color: $accent;
+    padding: 1 0;
+    text-align: center;
+}
+
+.section-title {
+    text-style: bold;
+    color: $text-muted;
+    padding: 1 0 0 0;
+}
+
+/* Template editor */
+#template-editor {
+    height: 1fr;
+}
+
+#template-form {
+    height: 1fr;
+    padding: 1;
+}
+
+#template-form Label {
+    margin-top: 1;
+}
+
+#template-form Input {
+    margin-bottom: 0;
+}
+
+#template-form TextArea {
+    height: 4;
+    margin-bottom: 0;
+}
+
+.form-row {
+    height: auto;
+}
+
+.method-select {
+    width: 20;
+    height: auto;
+}
+
+.url-input {
+    width: 1fr;
+    height: auto;
+    padding-left: 1;
+}
+
+.button-row {
+    height: auto;
+    margin-top: 1;
+}
+
+.button-row Button {
+    margin-right: 1;
+}
+
+/* Environment editor */
+#environment-editor {
+    height: 1fr;
+}
+
+#env-form {
+    height: 1fr;
+    padding: 1;
+    overflow-y: auto;
+}
+
+#env-form Label {
+    margin-top: 1;
+}
+
+#config-rows {
+    height: auto;
+}
+
+.config-row {
+    height: auto;
+    margin-bottom: 1;
+}
+
+.config-key {
+    width: 1fr;
+}
+
+.config-value {
+    width: 2fr;
+    margin-left: 1;
+}
+
+.config-remove-btn {
+    width: 5;
+    min-width: 5;
+    margin-left: 1;
+}
+
+/* Response viewer */
+#response-viewer {
+    height: 1fr;
+}
+
+#response-container {
+    height: 1fr;
+    padding: 1;
+}
+
+#response-status {
+    height: auto;
+    padding: 1 0;
+    text-style: bold;
+}
+
+#response-headers {
+    height: auto;
+    max-height: 10;
+}
+
+#response-body-scroll {
+    height: 1fr;
+    min-height: 10;
+}
+
+#response-body {
+    height: auto;
+    min-height: 10;
+}
