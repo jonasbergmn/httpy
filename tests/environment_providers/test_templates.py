@@ -46,11 +46,10 @@ def default_templates() -> list[HttpyRequestTemplate]:
 
 
 @pytest.fixture
-def saved_template_path(default_template: HttpyRequestTemplate) -> Path:
+def saved_template_name(default_template: HttpyRequestTemplate) -> str:
     project_name = "Test Project"
-    template_path = make_template_path(project_name, default_template.name)
     save_template(project_name, default_template)
-    return template_path
+    return default_template.id
 
 
 @pytest.fixture
@@ -74,18 +73,15 @@ def test_create_template(default_template: HttpyRequestTemplate):
 def test_save_template(default_template: HttpyRequestTemplate):
     project_name = "Test Project"
 
-    template_path = make_template_path(project_name, default_template.name)
+    template_path = make_template_path(project_name, default_template.id)
     save_template(project_name, default_template)
 
     assert template_path.exists()
 
 
-def test_load_template(saved_template_path: Path):
-    assert saved_template_path.exists()
-
+def test_load_template(saved_template_name: str):
     project_name = "Test Project"
-    template_name = "Test Template"
-    loaded_template = load_template(project_name, template_name)
+    loaded_template = load_template(project_name, saved_template_name)
 
     assert loaded_template.name == "Test Template"
     assert loaded_template.method == "GET"

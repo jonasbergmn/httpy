@@ -20,13 +20,13 @@ def make_project_path(project_name: str) -> Path:
     return get_basepath() / clean_name(project_name) / "project.json"
 
 
-def make_template_path(project_name: str, template_name: str) -> Path:
+def make_template_path(project_name: str, tempalte_id: str) -> Path:
     os.makedirs(get_basepath() / clean_name(project_name) / "templates", exist_ok=True)
     return (
         get_basepath()
         / clean_name(project_name)
         / "templates"
-        / f"{clean_name(template_name)}.json"
+        / f"{clean_name(tempalte_id)}.json"
     )
 
 
@@ -36,7 +36,7 @@ def make_templates_path(project_name: str) -> Path:
 
 
 def save_template(project_name: str, template: HttpyRequestTemplate) -> Path:
-    template_path = make_template_path(project_name, template.name)
+    template_path = make_template_path(project_name, template.id)
     template_json = json.dumps(
         {
             "name": template.name,
@@ -45,6 +45,7 @@ def save_template(project_name: str, template: HttpyRequestTemplate) -> Path:
             "headers": template.headers,
             "parameters": template.parameters,
             "body": template.body,
+            "id": template.id,
         },
         indent=4,
     )
@@ -54,8 +55,8 @@ def save_template(project_name: str, template: HttpyRequestTemplate) -> Path:
     return template_path
 
 
-def load_template(project_name: str, template_name: str) -> HttpyRequestTemplate:
-    template_json = make_template_path(project_name, template_name)
+def load_template(project_name: str, template_id: str) -> HttpyRequestTemplate:
+    template_json = make_template_path(project_name, template_id)
     with open(template_json, "r") as f:
         data = json.load(f)
 

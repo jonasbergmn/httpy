@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+import uuid
 
 
 @dataclass
@@ -9,3 +10,4 @@ class HttpyRequestTemplate:
     headers: dict[str, str]
     parameters: dict[str, str]
     body: str
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
