@@ -9,6 +9,7 @@ from httpy.tui.widgets.sidebar import ProjectSidebar
 from httpy.tui.widgets.template_editor import TemplateEditor
 from httpy.tui.widgets.environment_editor import EnvironmentEditor
 from httpy.tui.widgets.response_viewer import ResponseViewer
+from httpy.tui.widgets.response_history import ResponseHistory
 from httpy.tui.screens.new_project import NewProjectScreen
 from httpy.tui.screens.new_template import NewTemplateScreen
 from httpy.tui.screens.new_environment import NewEnvironmentScreen
@@ -29,6 +30,7 @@ class HttpyApp(App):
         Binding("n", "new_project", "New Project"),
         Binding("t", "new_template", "New Template"),
         Binding("e", "new_environment", "New Environment"),
+        Binding("ctrl+s", "send_request", "Send Request"),
     ]
 
     current_project: HttpyProject | None = None
@@ -41,12 +43,14 @@ class HttpyApp(App):
                 yield TemplateEditor(id="template-editor")
                 yield EnvironmentEditor(id="environment-editor")
                 yield ResponseViewer(id="response-viewer")
+                yield ResponseHistory(id="response-history")
         yield Footer()
 
     def on_mount(self) -> None:
         self.query_one("#template-editor", TemplateEditor).display = False
         self.query_one("#environment-editor", EnvironmentEditor).display = False
         self.query_one("#response-viewer", ResponseViewer).display = False
+        self.query_one("#response-history", ResponseHistory).display = False
 
     def on_project_sidebar_project_selected(
         self, message: ProjectSidebar.ProjectSelected
@@ -63,6 +67,10 @@ class HttpyApp(App):
         editor.load_template(message.template, message.project)
         editor.display = True
 
+        history = self.query_one("#response-history", ResponseHistory)
+        history.load_for_template(message.project.name, message.template.id)
+        history.display = True
+
     def on_project_sidebar_environment_selected(
         self, message: ProjectSidebar.EnvironmentSelected
     ) -> None:
@@ -74,6 +82,18 @@ class HttpyApp(App):
 
     def on_template_editor_request_sent(
         self, message: TemplateEditor.RequestSent
+    ) -> None:
+        viewer = self.query_one("#response-viewer", ResponseViewer)
+        viewer.show_response(message.response)
+        viewer.display = True
+
+        editor = self.query_one("#template-editor", TemplateEditor)
+        if self.current_project and editor._template:
+            history = self.query_one("#response-history", ResponseHistory)
+            history.load_for_template(self.current_project.name, editor._template.id)
+
+    def on_response_history_response_selected(
+        self, message: ResponseHistory.ResponseSelected
     ) -> None:
         viewer = self.query_one("#response-viewer", ResponseViewer)
         viewer.show_response(message.response)
@@ -96,6 +116,7 @@ class HttpyApp(App):
             if project is not None:
                 sidebar = self.query_one("#sidebar", ProjectSidebar)
                 sidebar.refresh_tree()
+                self.current_project = project
 
         self.push_screen(NewProjectScreen(), callback=on_project_created)
 
@@ -112,6 +133,11 @@ class HttpyApp(App):
         self.push_screen(
             NewTemplateScreen(self.current_project), callback=on_template_created
         )
+
+    def action_send_request(self) -> None:
+        editor = self.query_one("#template-editor", TemplateEditor)
+        if editor.display:
+            editor.action_send_request()
 
     def action_new_environment(self) -> None:
         if self.current_project is None:
@@ -131,3 +157,4 @@ class HttpyApp(App):
         self.query_one("#template-editor", TemplateEditor).display = False
         self.query_one("#environment-editor", EnvironmentEditor).display = False
         self.query_one("#response-viewer", ResponseViewer).display = False
+        self.query_one("#response-history", ResponseHistory).display = False

@@ -4,6 +4,7 @@ from textual.screen import ModalScreen
 from textual.widgets import Button, Input, Label, Static
 
 from httpy.core.project import HttpyProject
+from httpy.core.environment import HttpyEnvironment
 from httpy.core.request_handler import HttpyRequestHandler
 from httpy.io import save_project
 
@@ -44,6 +45,7 @@ class NewProjectScreen(ModalScreen[HttpyProject | None]):
                 name=name,
                 description=desc,
                 request_handler=HttpyRequestHandler(),
+                environments=[HttpyEnvironment(name="Default Environment", configs={})],
             )
             save_project(project)
             self.dismiss(project)

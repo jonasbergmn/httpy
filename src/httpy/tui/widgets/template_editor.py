@@ -8,8 +8,7 @@ from httpy.core.environment import HttpyEnvironment
 from httpy.core.project import HttpyProject
 from httpy.core.response import HttpyResponse
 from httpy.core.template import HttpyRequestTemplate
-from httpy.io import save_template
-
+from httpy.io import save_template, save_response
 import asyncio
 
 
@@ -37,6 +36,10 @@ class TemplateEditor(Widget):
     _project: HttpyProject | None = None
 
     def compose(self) -> ComposeResult:
+        with Horizontal(classes="sticky-bar"):
+            yield Button(
+                "Send Request (Ctrl+S)", variant="success", id="btn-send-request"
+            )
         with VerticalScroll(id="template-form"):
             yield Static("Template Editor", classes="panel-title")
             yield Label("Name")
@@ -61,7 +64,6 @@ class TemplateEditor(Widget):
             yield Select([], id="tmpl-env-select", allow_blank=True)
             with Horizontal(classes="button-row"):
                 yield Button("Save", variant="primary", id="btn-save-template")
-                yield Button("Send Request", variant="success", id="btn-send-request")
 
     def load_template(
         self, template: HttpyRequestTemplate, project: HttpyProject
@@ -129,6 +131,9 @@ class TemplateEditor(Widget):
             body=body,
         )
 
+    def action_send_request(self) -> None:
+        self._send_request()
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "btn-save-template":
             self._save_template()
@@ -182,6 +187,7 @@ class TemplateEditor(Widget):
         try:
             request = project.make_request(template, environment)
             response = await asyncio.to_thread(project.execute_request, request)
+            save_response(project.name, template.id, response)
             self.post_message(self.RequestSent(response))
         except Exception as e:
             self.notify(f"Request failed: {e}", severity="error")
